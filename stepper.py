@@ -12,23 +12,6 @@ except:
 # print which direction and how many steps
 print('you said turn %s %s steps.') % (direction,steps)
 
-#setup GPIO using broadcom layout BCM
-gpio.setmode(gpio.BCM)
-#GPIO23 = Direction
-#GPIO24 = Step
-import sys
-import RPi.GPIO as gpio
-import time
-
-#read arguments
-try:
-	direction = sys.argv[1]
-	steps = int(float(sys.argv[2]))
-except:
-	steps = 0
-
-# print which direction and how many steps
-print('you said turn %s %s steps.') % (direction,steps)
 
 #setup GPIO using broadcom layout BCM
 gpio.setmode(gpio.BCM)
@@ -46,9 +29,11 @@ elif direction == 'right':
 
 stepCounter = 0
 
-#waittime controls speed
+#waittime controls speed .001 is sufficiently fast and quiet
+#POT voltage of .5V is quiet with the NEMA 17 steppers and new stepper drivers
 
-waitTime = .005
+waitTime = .001
+
 
 while stepCounter < steps:
 	#turning on and off tells to make a step
@@ -57,18 +42,6 @@ while stepCounter < steps:
 	stepCounter += 1
 
 	time.sleep(waitTime)
-
-#clear GPIOs
-gpio.cleanup()
-
-
-while stepCounter < steps:
-        #turning on and off tells to make a step
-        gpio.output(25,True)
-        gpio.output(25,False)
-        stepCounter += 1
-
-        time.sleep(waitTime)
 
 #clear GPIOs
 gpio.cleanup()

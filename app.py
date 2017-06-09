@@ -14,7 +14,7 @@ from camera_pi import Camera
 app = Flask(__name__) #set up flask server
 app.secret_key=os.urandom(24)
 
-motor_object = motors.Pi() #create motor object
+motor = motors.move() #create motor object
 
 
 ############# routes ############
@@ -27,21 +27,27 @@ def video_feed():
         return Response(gen(Camera()),
                         mimetype = 'multipart/x-mixed-replace; boundary=frame')
 
-#recieve which pin to change from the button press on index.html
-#each button returns a number that triggers a command in this function
-#
 #Uses methods from motors.py to send commands to the GPIO to operate the motors
 @app.route('/move/<direction>', methods =['POST'])
-def reroute(direction):
+def moving(direction):
 	      
         move = int(direction)
         if move == 1:
-                motor_object.tiltUP(1)
+                motor.tiltUP()
+        elif move == 2:
+                motor.tiltDOWN()
+        elif move == 3:
+                motor.panLEFT()
+        elif move == 4:
+                motor.panRIGHT()
+        elif move == 5:
+                motor.UD_Home() 
+                motor.LR_Home()
+                
         else:
-                print "you've accomplished nothing"
+                return "false"
         
-	response = make_response(redirect(url_for('index')))
-	return(response)
+	return "success"
 
 ############# utils ###########
 def gen(camera):
@@ -53,6 +59,6 @@ def gen(camera):
                 
 ############# main ############
 if __name__ == '__main__':
-        app.run(host='0.0.0.0', port=5000, debug=True) #set up the server in debug mode to the port 5000
+        app.run(host='0.0.0.0', port=5000, debug=True, threaded=True) #set up the server in debug mode to the port 5000
 
 ############# EOF ##############
